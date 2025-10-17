@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react'
-import './App.css'
-import TodoCard from './components/TodoCard'
+import { useState, useEffect } from "react";
+import "./App.css";
+import TodoCard from "./components/TodoCard";
 
 function App() {
-  const [todos, setTodos] = useState([])
-  const [inputValue, setInputValue] = useState('')
-  const [activeTab, setActiveTab] = useState('all')
-  const [requestDelay, setRequestDelay] = useState(500) // Default 500ms
-  const [isLoading, setIsLoading] = useState(true) // Start with loading state
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
+  const [requestDelay, setRequestDelay] = useState(500); // Default 500ms
+  const [isLoading, setIsLoading] = useState(true); // Start with loading state
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const initialTasks = [
     { id: 1, text: "Learn React 19 new features", completed: false },
@@ -17,88 +17,90 @@ function App() {
     { id: 4, text: "Add loading states", completed: true },
     { id: 5, text: "Style the application", completed: false },
     { id: 6, text: "Test different delay times", completed: false },
-  ]
+  ];
 
   // Fetch initial todos on component mount
   useEffect(() => {
     const fetchInitialTodos = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       // Simulate fetching from an API
-      await new Promise(resolve => setTimeout(resolve, requestDelay))
-      setTodos(initialTasks)
-      setIsInitialized(true)
-      setIsLoading(false)
-    }
+      await new Promise((resolve) => setTimeout(resolve, requestDelay));
+      setTodos(initialTasks);
+      setIsInitialized(true);
+      setIsLoading(false);
+    };
 
     if (!isInitialized) {
-      fetchInitialTodos()
+      fetchInitialTodos();
     }
-  }, [isInitialized, requestDelay])
+  }, [isInitialized, requestDelay]);
 
   // Simulate API request with configurable delay for user actions
   const simulateRequest = async (operation) => {
-    if (!isInitialized) return // Don't simulate requests during initial load
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, requestDelay))
-    operation()
-    setIsLoading(false)
-  }
+    if (!isInitialized) return; // Don't simulate requests during initial load
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, requestDelay));
+    operation();
+    setIsLoading(false);
+  };
 
   const addTodo = async () => {
-    if (inputValue.trim() !== '') {
+    if (inputValue.trim() !== "") {
       const newTodo = {
         id: Date.now(),
         text: inputValue.trim(),
-        completed: false
-      }
-      
+        completed: false,
+      };
+
       await simulateRequest(() => {
-        setTodos(prev => [...prev, newTodo])
-        setInputValue('')
-      })
+        setTodos((prev) => [...prev, newTodo]);
+        setInputValue("");
+      });
     }
-  }
+  };
 
   const toggleTodo = async (id) => {
     await simulateRequest(() => {
-      setTodos(todos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      ))
-    })
-  }
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        )
+      );
+    });
+  };
 
   const deleteTodo = async (id) => {
     await simulateRequest(() => {
-      setTodos(todos.filter(todo => todo.id !== id))
-    })
-  }
+      setTodos(todos.filter((todo) => todo.id !== id));
+    });
+  };
 
   const getFilteredTodos = () => {
     switch (activeTab) {
-      case 'todo':
-        return todos.filter(todo => !todo.completed)
-      case 'completed':
-        return todos.filter(todo => todo.completed)
+      case "todo":
+        return todos.filter((todo) => !todo.completed);
+      case "completed":
+        return todos.filter((todo) => todo.completed);
       default:
-        return todos
+        return todos;
     }
-  }
+  };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      addTodo()
+    if (e.key === "Enter") {
+      addTodo();
     }
-  }
+  };
 
-  const filteredTodos = getFilteredTodos()
-  const todoCount = todos.filter(todo => !todo.completed).length
-  const completedCount = todos.filter(todo => todo.completed).length
+  const filteredTodos = getFilteredTodos();
+  const todoCount = todos.filter((todo) => !todo.completed).length;
+  const completedCount = todos.filter((todo) => todo.completed).length;
 
   return (
     <div className="app">
       <div className="todo-container">
         <h1>To-Do List</h1>
-        
+
         {/* Request Simulation Control */}
         <div className="simulation-control">
           <label htmlFor="delay-slider" className="delay-label">
@@ -119,16 +121,16 @@ function App() {
             <span>1.5s</span>
             <span>3s</span>
           </div>
-          <button 
+          <button
             onClick={() => {
-              setIsInitialized(false)
-              setTodos([])
+              setIsInitialized(false);
+              setTodos([]);
             }}
             className="refresh-btn"
             disabled={isLoading}
             title="Refresh todos (simulates API refetch)"
           >
-            {isLoading && !isInitialized ? 'Refreshing...' : '↻ Refresh'}
+            {isLoading && !isInitialized ? "Refreshing..." : "↻ Refresh"}
           </button>
         </div>
 
@@ -137,11 +139,11 @@ function App() {
           <div className="loading-indicator">
             <div className="spinner"></div>
             <span>
-              {!isInitialized ? 'Loading todos...' : 'Processing request...'}
+              {!isInitialized ? "Loading todos..." : "Processing request..."}
             </span>
           </div>
         )}
-        
+
         <div className="input-section">
           <input
             type="text"
@@ -152,31 +154,27 @@ function App() {
             className="todo-input"
             disabled={isLoading}
           />
-          <button 
-            onClick={addTodo} 
-            className="add-btn"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Adding...' : 'Add'}
+          <button onClick={addTodo} className="add-btn" disabled={isLoading}>
+            {isLoading ? "Adding..." : "Add"}
           </button>
         </div>
 
         <div className="tabs">
           <button
-            className={`tab ${activeTab === 'all' ? 'active' : ''}`}
-            onClick={() => setActiveTab('all')}
+            className={`tab ${activeTab === "all" ? "active" : ""}`}
+            onClick={() => setActiveTab("all")}
           >
             All ({todos.length})
           </button>
           <button
-            className={`tab ${activeTab === 'todo' ? 'active' : ''}`}
-            onClick={() => setActiveTab('todo')}
+            className={`tab ${activeTab === "todo" ? "active" : ""}`}
+            onClick={() => setActiveTab("todo")}
           >
             Todo ({todoCount})
           </button>
           <button
-            className={`tab ${activeTab === 'completed' ? 'active' : ''}`}
-            onClick={() => setActiveTab('completed')}
+            className={`tab ${activeTab === "completed" ? "active" : ""}`}
+            onClick={() => setActiveTab("completed")}
           >
             Completed ({completedCount})
           </button>
@@ -185,19 +183,27 @@ function App() {
         <div className="todo-list">
           {filteredTodos.length === 0 ? (
             <p className="empty-message">
-              {activeTab === 'todo' ? 'No pending tasks!' : 
-               activeTab === 'completed' ? 'No completed tasks!' : 
-               'No tasks yet. Add one above!'}
+              {activeTab === "todo"
+                ? "No pending tasks!"
+                : activeTab === "completed"
+                ? "No completed tasks!"
+                : "No tasks yet. Add one above!"}
             </p>
           ) : (
-            filteredTodos.map(todo => (
-              <TodoCard todo={todo} isLoading={isLoading} />
+            filteredTodos.map((todo) => (
+              <TodoCard
+                key={todo.id}
+                todo={todo}
+                isLoading={isLoading}
+                toggleTodo={toggleTodo}
+                deleteTodo={deleteTodo}
+              />
             ))
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

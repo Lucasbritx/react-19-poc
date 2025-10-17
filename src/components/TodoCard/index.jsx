@@ -1,8 +1,7 @@
+import { ViewTransition } from "react";
+
 const TodoCard = ({ todo, isLoading = false }) => (
-  <div
-    key={todo.id}
-    className={`todo-item ${todo.completed ? "completed" : ""}`}
-  >
+  <div className={`todo-item ${todo.completed ? "completed" : ""}`}>
     <div className="todo-content">
       <input
         type="checkbox"
