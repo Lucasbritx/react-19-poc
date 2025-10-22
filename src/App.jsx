@@ -2,6 +2,13 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import TodoCard from "./components/TodoCard";
 
+// TODO
+// Call useTodoOperations hook
+// useActionState for formHandling
+// useOptimistic for updates
+// useTransition to isPending state(startTransition on button click)
+// Add Activity component
+
 function App() {
   const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
