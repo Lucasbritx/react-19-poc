@@ -7,6 +7,7 @@ import TodoCard from "./components/TodoCard";
 // useActionState for formHandling
 // useOptimistic for updates
 // useTransition to isPending state(startTransition on button click)
+// add ViewTransition https://react.dev/reference/react/ViewTransition
 // Add Activity component
 
 function App() {
