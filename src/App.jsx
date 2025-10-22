@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import "./App.css";
 import TodoCard from "./components/TodoCard";
 
@@ -16,6 +16,9 @@ function App() {
   const [requestDelay, setRequestDelay] = useState(500); // Default 500ms
   const [isLoading, setIsLoading] = useState(true); // Start with loading state
   const [isInitialized, setIsInitialized] = useState(false);
+
+
+  const [isPending, startTransition] = useTransition();
 
   const initialTasks = [
     { id: 1, text: "Learn React 19 new features", completed: false },
