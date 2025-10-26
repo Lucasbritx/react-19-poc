@@ -1,4 +1,4 @@
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, use, Suspense } from "react";
 import "./App.css";
 import TodoCard from "./components/TodoCard";
 
@@ -10,27 +10,29 @@ import TodoCard from "./components/TodoCard";
 // add ViewTransition https://react.dev/reference/react/ViewTransition
 // Add Activity component
 
+const initialTasks = [
+  { id: 1, text: "Learn React 19 new features", completed: false },
+  { id: 2, text: "Build a todo application", completed: true },
+  { id: 3, text: "Implement request simulation", completed: false },
+  { id: 4, text: "Add loading states", completed: true },
+  { id: 5, text: "Style the application", completed: false },
+  { id: 6, text: "Test different delay times", completed: false },
+];
+
+const fetchTodos = () =>
+  new Promise((resolve) => setTimeout(() => resolve(initialTasks)), 500);
+
 function App() {
-  const [todos, setTodos] = useState([]);
+  // const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [requestDelay, setRequestDelay] = useState(500); // Default 500ms
   const [isLoading, setIsLoading] = useState(true); // Start with loading state
   const [isInitialized, setIsInitialized] = useState(false);
 
-
   const [isPending, startTransition] = useTransition();
 
-  const initialTasks = [
-    { id: 1, text: "Learn React 19 new features", completed: false },
-    { id: 2, text: "Build a todo application", completed: true },
-    { id: 3, text: "Implement request simulation", completed: false },
-    { id: 4, text: "Add loading states", completed: true },
-    { id: 5, text: "Style the application", completed: false },
-    { id: 6, text: "Test different delay times", completed: false },
-  ];
-
-  // Fetch initial todos on component mount
+  /* // Fetch initial todos on component mount
   useEffect(() => {
     const fetchInitialTodos = async () => {
       setIsLoading(true);
@@ -44,7 +46,8 @@ function App() {
     if (!isInitialized) {
       fetchInitialTodos();
     }
-  }, [isInitialized, requestDelay]);
+  }, [isInitialized, requestDelay]); */
+  const todos = use(fetchTodos());
 
   // Simulate API request with configurable delay for user actions
   const simulateRequest = async (operation) => {
@@ -145,16 +148,6 @@ function App() {
           </button>
         </div>
 
-        {/* Loading Indicator */}
-        {isLoading && (
-          <div className="loading-indicator">
-            <div className="spinner"></div>
-            <span>
-              {!isInitialized ? "Loading todos..." : "Processing request..."}
-            </span>
-          </div>
-        )}
-
         <div className="input-section">
           <input
             type="text"
@@ -191,27 +184,38 @@ function App() {
           </button>
         </div>
 
-        <div className="todo-list">
-          {filteredTodos.length === 0 ? (
-            <p className="empty-message">
-              {activeTab === "todo"
-                ? "No pending tasks!"
-                : activeTab === "completed"
-                ? "No completed tasks!"
-                : "No tasks yet. Add one above!"}
-            </p>
-          ) : (
-            filteredTodos.map((todo) => (
-              <TodoCard
-                key={todo.id}
-                todo={todo}
-                isLoading={isLoading}
-                toggleTodo={toggleTodo}
-                deleteTodo={deleteTodo}
-              />
-            ))
-          )}
-        </div>
+        <Suspense
+          fallback={
+            <div className="loading-indicator">
+              <div className="spinner"></div>
+              <span>
+                {!isInitialized ? "Loading todos..." : "Processing request..."}
+              </span>
+            </div>
+          }
+        >
+          <div className="todo-list">
+            {filteredTodos.length === 0 ? (
+              <p className="empty-message">
+                {activeTab === "todo"
+                  ? "No pending tasks!"
+                  : activeTab === "completed"
+                  ? "No completed tasks!"
+                  : "No tasks yet. Add one above!"}
+              </p>
+            ) : (
+              filteredTodos.map((todo) => (
+                <TodoCard
+                  key={todo.id}
+                  todo={todo}
+                  isLoading={isLoading}
+                  toggleTodo={toggleTodo}
+                  deleteTodo={deleteTodo}
+                />
+              ))
+            )}
+          </div>
+        </Suspense>
       </div>
     </div>
   );
