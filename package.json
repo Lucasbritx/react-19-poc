@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.3.0-canary-71b3a03c-20251021",
+    "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
