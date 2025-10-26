@@ -1,6 +1,8 @@
+"use client";
 import { useState, useEffect, useTransition, use, Suspense } from "react";
 import "./App.css";
 import TodoCard from "./components/TodoCard";
+import TodoList from "./components/TodoList";
 
 // TODO
 // Call useTodoOperations hook
@@ -89,24 +91,12 @@ function App() {
     });
   };
 
-  const getFilteredTodos = () => {
-    switch (activeTab) {
-      case "todo":
-        return todos.filter((todo) => !todo.completed);
-      case "completed":
-        return todos.filter((todo) => todo.completed);
-      default:
-        return todos;
-    }
-  };
-
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       addTodo();
     }
   };
 
-  const filteredTodos = getFilteredTodos();
   const todoCount = todos.filter((todo) => !todo.completed).length;
   const completedCount = todos.filter((todo) => todo.completed).length;
 
@@ -194,27 +184,7 @@ function App() {
             </div>
           }
         >
-          <div className="todo-list">
-            {filteredTodos.length === 0 ? (
-              <p className="empty-message">
-                {activeTab === "todo"
-                  ? "No pending tasks!"
-                  : activeTab === "completed"
-                  ? "No completed tasks!"
-                  : "No tasks yet. Add one above!"}
-              </p>
-            ) : (
-              filteredTodos.map((todo) => (
-                <TodoCard
-                  key={todo.id}
-                  todo={todo}
-                  isLoading={isLoading}
-                  toggleTodo={toggleTodo}
-                  deleteTodo={deleteTodo}
-                />
-              ))
-            )}
-          </div>
+          <TodoList activeTab={activeTab} todos={todos} />
         </Suspense>
       </div>
     </div>
