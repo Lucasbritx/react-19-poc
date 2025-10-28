@@ -1,8 +1,5 @@
-"use client";
-import { useState, useEffect, useTransition, use, Suspense } from "react";
+import { useState, use, Suspense } from "react";
 import "./App.css";
-import TodoCard from "./components/TodoCard";
-import TodoList from "./components/TodoList";
 
 // TODO
 // Call useTodoOperations hook
@@ -12,182 +9,85 @@ import TodoList from "./components/TodoList";
 // add ViewTransition https://react.dev/reference/react/ViewTransition
 // Add Activity component
 
-const initialTasks = [
-  { id: 1, text: "Learn React 19 new features", completed: false },
-  { id: 2, text: "Build a todo application", completed: true },
-  { id: 3, text: "Implement request simulation", completed: false },
-  { id: 4, text: "Add loading states", completed: true },
-  { id: 5, text: "Style the application", completed: false },
-  { id: 6, text: "Test different delay times", completed: false },
+const todos = [
+  { id: 1, text: "Learn React 19", completed: false },
+  { id: 2, text: "Test SSR", completed: true },
+  { id: 3, text: "Use use() hook", completed: false },
 ];
 
-const fetchTodos = () =>
-  new Promise((resolve) => setTimeout(() => resolve(initialTasks)), 500);
+let promise = null;
+const fetchTodos = () => {
+  if (!promise) {
+    promise = new Promise(resolve => 
+      setTimeout(() => resolve(todos), 1000)
+    );
+  }
+  return promise;
+};
 
-function App() {
-  // const [todos, setTodos] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
-  const [requestDelay, setRequestDelay] = useState(500); // Default 500ms
-  const [isLoading, setIsLoading] = useState(true); // Start with loading state
-  const [isInitialized, setIsInitialized] = useState(false);
+function TodosWithData() {
+  const data = use(fetchTodos());
+  return <TodoApp todos={data} />;
+}
 
-  const [isPending, startTransition] = useTransition();
+function TodoApp({ todos: initialTodos }) {
+  const [todos, setTodos] = useState(initialTodos);
+  const [input, setInput] = useState("");
 
-  /* // Fetch initial todos on component mount
-  useEffect(() => {
-    const fetchInitialTodos = async () => {
-      setIsLoading(true);
-      // Simulate fetching from an API
-      await new Promise((resolve) => setTimeout(resolve, requestDelay));
-      setTodos(initialTasks);
-      setIsInitialized(true);
-      setIsLoading(false);
-    };
-
-    if (!isInitialized) {
-      fetchInitialTodos();
-    }
-  }, [isInitialized, requestDelay]); */
-  const todos = use(fetchTodos());
-
-  // Simulate API request with configurable delay for user actions
-  const simulateRequest = async (operation) => {
-    if (!isInitialized) return; // Don't simulate requests during initial load
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, requestDelay));
-    operation();
-    setIsLoading(false);
-  };
-
-  const addTodo = async () => {
-    if (inputValue.trim() !== "") {
-      const newTodo = {
-        id: Date.now(),
-        text: inputValue.trim(),
-        completed: false,
-      };
-
-      await simulateRequest(() => {
-        setTodos((prev) => [...prev, newTodo]);
-        setInputValue("");
-      });
+  const addTodo = () => {
+    if (input.trim()) {
+      setTodos([...todos, { 
+        id: Date.now(), 
+        text: input, 
+        completed: false 
+      }]);
+      setInput("");
     }
   };
 
-  const toggleTodo = async (id) => {
-    await simulateRequest(() => {
-      setTodos(
-        todos.map((todo) =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        )
-      );
-    });
+  const toggle = (id) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
   };
-
-  const deleteTodo = async (id) => {
-    await simulateRequest(() => {
-      setTodos(todos.filter((todo) => todo.id !== id));
-    });
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      addTodo();
-    }
-  };
-
-  const todoCount = todos.filter((todo) => !todo.completed).length;
-  const completedCount = todos.filter((todo) => todo.completed).length;
 
   return (
-    <div className="app">
-      <div className="todo-container">
-        <h1>To-Do List</h1>
-
-        {/* Request Simulation Control */}
-        <div className="simulation-control">
-          <label htmlFor="delay-slider" className="delay-label">
-            Request Delay: {requestDelay}ms
-          </label>
-          <input
-            id="delay-slider"
-            type="range"
-            min="0"
-            max="3000"
-            step="100"
-            value={requestDelay}
-            onChange={(e) => setRequestDelay(Number(e.target.value))}
-            className="delay-slider"
-          />
-          <div className="delay-markers">
-            <span>0ms</span>
-            <span>1.5s</span>
-            <span>3s</span>
-          </div>
-          <button
-            onClick={() => {
-              setIsInitialized(false);
-              setTodos([]);
-            }}
-            className="refresh-btn"
-            disabled={isLoading}
-            title="Refresh todos (simulates API refetch)"
-          >
-            {isLoading && !isInitialized ? "Refreshing..." : "↻ Refresh"}
-          </button>
-        </div>
-
-        <div className="input-section">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Add a new task..."
-            className="todo-input"
-            disabled={isLoading}
-          />
-          <button onClick={addTodo} className="add-btn" disabled={isLoading}>
-            {isLoading ? "Adding..." : "Add"}
-          </button>
-        </div>
-
-        <div className="tabs">
-          <button
-            className={`tab ${activeTab === "all" ? "active" : ""}`}
-            onClick={() => setActiveTab("all")}
-          >
-            All ({todos.length})
-          </button>
-          <button
-            className={`tab ${activeTab === "todo" ? "active" : ""}`}
-            onClick={() => setActiveTab("todo")}
-          >
-            Todo ({todoCount})
-          </button>
-          <button
-            className={`tab ${activeTab === "completed" ? "active" : ""}`}
-            onClick={() => setActiveTab("completed")}
-          >
-            Completed ({completedCount})
-          </button>
-        </div>
-
-        <Suspense
-          fallback={
-            <div className="loading-indicator">
-              <div className="spinner"></div>
-              <span>
-                {!isInitialized ? "Loading todos..." : "Processing request..."}
-              </span>
-            </div>
-          }
-        >
-          <TodoList activeTab={activeTab} todos={todos} />
-        </Suspense>
+    <div style={{ maxWidth: '500px', margin: '50px auto', padding: '20px' }}>
+      <h1>React 19 + SSR</h1>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && addTodo()}
+          placeholder="Add todo..."
+        />
+        <button onClick={addTodo}>Add</button>
       </div>
+
+      {todos.map(todo => (
+        <div key={todo.id} style={{ margin: '10px 0' }}>
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => toggle(todo.id)}
+          />
+          <span style={{ 
+            textDecoration: todo.completed ? 'line-through' : 'none'
+          }}>
+            {todo.text}
+          </span>
+        </div>
+      ))}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TodosWithData />
+    </Suspense>
   );
 }
 
