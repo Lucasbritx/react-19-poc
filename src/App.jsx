@@ -19,18 +19,15 @@ let promise = null;
 const fetchTodos = () => {
   if (!promise) {
     promise = new Promise(resolve => 
-      setTimeout(() => resolve(todos), 1000)
+      setTimeout(() => resolve(todos), 10000)
     );
   }
   return promise;
 };
 
-function TodosWithData() {
-  const data = use(fetchTodos());
-  return <TodoApp todos={data} />;
-}
+function TodoApp() {
+    const initialTodos = use(fetchTodos());
 
-function TodoApp({ todos: initialTodos }) {
   const [todos, setTodos] = useState(initialTodos);
   const [input, setInput] = useState("");
 
@@ -86,7 +83,7 @@ function TodoApp({ todos: initialTodos }) {
 function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <TodosWithData />
+      <TodoApp />
     </Suspense>
   );
 }
