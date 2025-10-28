@@ -1,7 +1,13 @@
 import React from "react";
 import TodoCard from "../TodoCard";
 
-function TodoList({ activeTab, todos }) {
+function TodoList({
+  activeTab,
+  todos,
+  isLoading,
+  toggleTodo = () => {},
+  deleteTodo = () => {},
+}) {
   const getFilteredTodos = () => {
     switch (activeTab) {
       case "todo":

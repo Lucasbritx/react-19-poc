@@ -6,12 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ssr:dev": "vite --port 3000",
+    "ssr:build": "vite build",
+    "ssr:preview": "vite preview --port 3000",
+    "lint": "eslint ."
   },
   "dependencies": {
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "vike": "^0.4.244",
+    "vike-react": "^0.6.10"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
