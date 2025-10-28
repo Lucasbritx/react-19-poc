@@ -19,7 +19,7 @@ let promise = null;
 const fetchTodos = () => {
   if (!promise) {
     promise = new Promise(resolve => 
-      setTimeout(() => resolve(todos), 10000)
+      setTimeout(() => resolve(todos), 3000)
     );
   }
   return promise;
