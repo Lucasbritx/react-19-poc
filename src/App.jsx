@@ -23,6 +23,19 @@ const fetchTodos = () => {
   return promise;
 };
 
+// Simulate async todo addition with delay
+const addTodoAsync = async (todoText, currentTodos) => {
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+
+  const newTodo = {
+    id: Date.now(),
+    text: todoText,
+    completed: false,
+  };
+
+  return [...currentTodos, newTodo];
+};
+
 function TodoApp() {
   const initialTodos = use(fetchTodos());
   const [isPending, startTransition] = useTransition();
@@ -31,19 +44,19 @@ function TodoApp() {
   const [input, setInput] = useState("");
 
   const addTodo = () => {
-    startTransition(async () => {
-      if (input.trim()) {
-        setTodos([
-          ...todos,
-          {
-            id: Date.now(),
-            text: input,
-            completed: false,
-          },
-        ]);
-        setInput("");
-      }
-    });
+    if (input.trim()) {
+      const todoText = input.trim();
+      setInput("");
+
+      startTransition(async () => {
+        try {
+          const updatedTodos = await addTodoAsync(todoText, todos);
+          setTodos(updatedTodos);
+        } catch (error) {
+          console.error("Failed to add todo:", error);
+        }
+      });
+    }
   };
 
   const toggle = (id) => {
@@ -65,11 +78,29 @@ function TodoApp() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addTodo()}
           placeholder="Add todo..."
+          style={{
+            opacity: isPending ? 0.6 : 1,
+            cursor: isPending ? "not-allowed" : "text",
+          }}
         />
-        <button disabled={isPending} onClick={addTodo}>
-          Add
+        <button
+          disabled={isPending}
+          onClick={addTodo}
+          style={{
+            opacity: isPending ? 0.6 : 1,
+            cursor: isPending ? "not-allowed" : "pointer",
+          }}
+        >
+          {isPending ? "Adding..." : "Add"}
         </button>
       </div>
+
+      {isPending && (
+        <span
+        >
+          Adding todo...
+        </span>
+      )}
 
       {todos.map((todo) => (
         <div key={todo.id} style={{ margin: "10px 0" }}>
