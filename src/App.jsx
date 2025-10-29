@@ -5,7 +5,7 @@ import "./App.css";
 // Call useTodoOperations hook
 // useActionState for formHandling
 // useOptimistic for updates
-// useTransition to isPending state(startTransition on button click)
+// useTransition to isPending state(startTransition on button click) DONE
 // add ViewTransition https://react.dev/reference/react/ViewTransition
 // Add Activity component
 
