@@ -1,4 +1,4 @@
-import { useState, use, Suspense } from "react";
+import { useState, use, Suspense, useTransition } from "react";
 import "./App.css";
 
 // TODO
@@ -18,60 +18,71 @@ const todos = [
 let promise = null;
 const fetchTodos = () => {
   if (!promise) {
-    promise = new Promise(resolve => 
-      setTimeout(() => resolve(todos), 3000)
-    );
+    promise = new Promise((resolve) => setTimeout(() => resolve(todos), 1000));
   }
   return promise;
 };
 
 function TodoApp() {
-    const initialTodos = use(fetchTodos());
+  const initialTodos = use(fetchTodos());
+  const [isPending, startTransition] = useTransition();
 
   const [todos, setTodos] = useState(initialTodos);
   const [input, setInput] = useState("");
 
   const addTodo = () => {
-    if (input.trim()) {
-      setTodos([...todos, { 
-        id: Date.now(), 
-        text: input, 
-        completed: false 
-      }]);
-      setInput("");
-    }
+    startTransition(async () => {
+      if (input.trim()) {
+        setTodos([
+          ...todos,
+          {
+            id: Date.now(),
+            text: input,
+            completed: false,
+          },
+        ]);
+        setInput("");
+      }
+    });
   };
 
   const toggle = (id) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '50px auto', padding: '20px' }}>
+    <div style={{ maxWidth: "500px", margin: "50px auto", padding: "20px" }}>
       <h1>React 19 + SSR</h1>
-      
-      <div style={{ marginBottom: '20px' }}>
+
+      <div style={{ marginBottom: "20px" }}>
         <input
           value={input}
+          disabled={isPending}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addTodo()}
+          onKeyDown={(e) => e.key === "Enter" && addTodo()}
           placeholder="Add todo..."
         />
-        <button onClick={addTodo}>Add</button>
+        <button disabled={isPending} onClick={addTodo}>
+          Add
+        </button>
       </div>
 
-      {todos.map(todo => (
-        <div key={todo.id} style={{ margin: '10px 0' }}>
+      {todos.map((todo) => (
+        <div key={todo.id} style={{ margin: "10px 0" }}>
           <input
             type="checkbox"
             checked={todo.completed}
             onChange={() => toggle(todo.id)}
           />
-          <span style={{ 
-            textDecoration: todo.completed ? 'line-through' : 'none'
-          }}>
+          <span
+            style={{
+              textDecoration: todo.completed ? "line-through" : "none",
+            }}
+          >
             {todo.text}
           </span>
         </div>
