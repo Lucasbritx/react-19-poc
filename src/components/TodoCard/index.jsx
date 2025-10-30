@@ -1,6 +1,6 @@
-import { ViewTransition } from "react";
+import React from "react";
 
-const TodoCard = ({ todo, isLoading = false }) => (
+const TodoCard = ({ todo, isLoading = false, toggleTodo, deleteTodo }) => (
   <div className={`todo-item ${todo.completed ? "completed" : ""}`}>
     <div className="todo-content">
       <input

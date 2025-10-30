@@ -1,5 +1,6 @@
 import { useState, use, Suspense, useTransition } from "react";
 import "./App.css";
+import TodoList from "./components/TodoList";
 
 // TODO
 // Call useTodoOperations hook
@@ -25,7 +26,7 @@ const fetchTodos = () => {
 
 // Simulate async todo addition with delay
 const addTodoAsync = async (todoText, currentTodos) => {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const newTodo = {
     id: Date.now(),
@@ -59,7 +60,7 @@ function TodoApp() {
     }
   };
 
-  const toggle = (id) => {
+  const toggleTodo = (id) => {
     setTodos(
       todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
@@ -95,29 +96,9 @@ function TodoApp() {
         </button>
       </div>
 
-      {isPending && (
-        <span
-        >
-          Adding todo...
-        </span>
-      )}
+      {isPending && <span>Adding todo...</span>}
 
-      {todos.map((todo) => (
-        <div key={todo.id} style={{ margin: "10px 0" }}>
-          <input
-            type="checkbox"
-            checked={todo.completed}
-            onChange={() => toggle(todo.id)}
-          />
-          <span
-            style={{
-              textDecoration: todo.completed ? "line-through" : "none",
-            }}
-          >
-            {todo.text}
-          </span>
-        </div>
-      ))}
+      <TodoList todos={todos} toggleTodo={toggleTodo} />
     </div>
   );
 }
