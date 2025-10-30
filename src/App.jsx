@@ -1,6 +1,7 @@
 import { useState, use, Suspense, useTransition } from "react";
 import "./App.css";
 import TodoList from "./components/TodoList";
+import Tabs from "./components/Tabs";
 
 // TODO
 // Call useTodoOperations hook
@@ -44,9 +45,6 @@ function TodoApp() {
   const [todos, setTodos] = useState(initialTodos);
   const [input, setInput] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-
-  const todoCount = todos.filter((todo) => !todo.completed).length;
-  const completedCount = todos.filter((todo) => todo.completed).length;
 
   const addTodo = () => {
     if (input.trim()) {
@@ -99,27 +97,7 @@ function TodoApp() {
         </button>
       </div>
 
-      <div className="tabs">
-        <button
-          className={`tab ${activeTab === "all" ? "active" : ""}`}
-          onClick={() => setActiveTab("all")}
-        >
-          All ({todos.length})
-        </button>
-        <button
-          className={`tab ${activeTab === "todo" ? "active" : ""}`}
-          onClick={() => setActiveTab("todo")}
-        >
-          Todo ({todoCount})
-        </button>
-        <button
-          className={`tab ${activeTab === "completed" ? "active" : ""}`}
-          onClick={() => setActiveTab("completed")}
-        >
-          Completed ({completedCount})
-        </button>
-      </div>
-
+      <Tabs activeTab={activeTab} setActiveTab={setActiveTab} todos={todos} />
       {isPending && <span>Adding todo...</span>}
 
       <TodoList todos={todos} toggleTodo={toggleTodo} activeTab={activeTab} />
