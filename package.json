@@ -13,8 +13,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "react": "experimental",
-    "react-dom": "experimental",
+    "react": "^19.3.0-canary-4f931700-20251029",
+    "react-dom": "^19.3.0-canary-4f931700-20251029",
     "vike": "^0.4.244",
     "vike-react": "^0.6.10"
   },
