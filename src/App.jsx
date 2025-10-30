@@ -1,4 +1,4 @@
-import { useState, use, Suspense, useTransition } from "react";
+import { useState, use, Suspense, useTransition, Activity } from "react";
 import "./App.css";
 import TodoList from "./components/TodoList";
 import Tabs from "./components/Tabs";
@@ -70,6 +70,9 @@ function TodoApp() {
     );
   };
 
+  const completedTasks = todos.filter((todo) => todo.completed);
+  const todoTasks = todos.filter((todo) => !todo.completed);
+
   return (
     <div style={{ maxWidth: "500px", margin: "50px auto", padding: "20px" }}>
       <h1>Todo list</h1>
@@ -100,7 +103,15 @@ function TodoApp() {
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} todos={todos} />
       {isPending && <span>Adding todo...</span>}
 
-      <TodoList todos={todos} toggleTodo={toggleTodo} activeTab={activeTab} />
+      <Activity mode={activeTab === "all" ? "visible" : "hidden"}>
+        <TodoList todos={todos} toggleTodo={toggleTodo} />
+      </Activity>
+      <Activity mode={activeTab === "todo" ? "visible" : "hidden"}>
+        <TodoList todos={todoTasks} toggleTodo={toggleTodo} />
+      </Activity>
+      <Activity mode={activeTab === "completed" ? "visible" : "hidden"}>
+        <TodoList todos={completedTasks} toggleTodo={toggleTodo} />
+      </Activity>
     </div>
   );
 }
