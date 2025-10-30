@@ -43,6 +43,10 @@ function TodoApp() {
 
   const [todos, setTodos] = useState(initialTodos);
   const [input, setInput] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
+
+  const todoCount = todos.filter((todo) => !todo.completed).length;
+  const completedCount = todos.filter((todo) => todo.completed).length;
 
   const addTodo = () => {
     if (input.trim()) {
@@ -70,8 +74,7 @@ function TodoApp() {
 
   return (
     <div style={{ maxWidth: "500px", margin: "50px auto", padding: "20px" }}>
-      <h1>React 19 + SSR</h1>
-
+      <h1>Todo list</h1>
       <div style={{ marginBottom: "20px" }}>
         <input
           value={input}
@@ -96,9 +99,30 @@ function TodoApp() {
         </button>
       </div>
 
+      <div className="tabs">
+        <button
+          className={`tab ${activeTab === "all" ? "active" : ""}`}
+          onClick={() => setActiveTab("all")}
+        >
+          All ({todos.length})
+        </button>
+        <button
+          className={`tab ${activeTab === "todo" ? "active" : ""}`}
+          onClick={() => setActiveTab("todo")}
+        >
+          Todo ({todoCount})
+        </button>
+        <button
+          className={`tab ${activeTab === "completed" ? "active" : ""}`}
+          onClick={() => setActiveTab("completed")}
+        >
+          Completed ({completedCount})
+        </button>
+      </div>
+
       {isPending && <span>Adding todo...</span>}
 
-      <TodoList todos={todos} toggleTodo={toggleTodo} />
+      <TodoList todos={todos} toggleTodo={toggleTodo} activeTab={activeTab} />
     </div>
   );
 }
