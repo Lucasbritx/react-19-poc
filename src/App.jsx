@@ -41,6 +41,7 @@ const addTodoAsync = async (todoText, currentTodos) => {
 function TodoApp() {
   const initialTodos = use(fetchTodos());
   const [isPending, startTransition] = useTransition();
+  const [isTabPending, startTabTransition] = useTransition();
 
   const [todos, setTodos] = useState(initialTodos);
   const [input, setInput] = useState("");
@@ -100,8 +101,19 @@ function TodoApp() {
         </button>
       </div>
 
-      <Tabs activeTab={activeTab} setActiveTab={setActiveTab} todos={todos} />
+      <Tabs
+        activeTab={activeTab}
+        isLoading={isTabPending}
+        setActiveTab={(newTab) =>
+          startTabTransition(async () => {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            setActiveTab(newTab);
+          })
+        }
+        todos={todos}
+      />
       {isPending && <span>Adding todo...</span>}
+      {isTabPending && <span>Switching tabs...</span>}
 
       <Activity mode={activeTab === "all" ? "visible" : "hidden"}>
         <TodoList todos={todos} toggleTodo={toggleTodo} />
